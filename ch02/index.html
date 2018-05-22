@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>D3 Chapter 2</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js"></script>
+</head>
+
+<body>
+  <svg></svg>
+  <script>
+    const api = 'http://localhost:3000';
+    d3.json(`${api}/cities`, data => console.log(data));
+    d3.json(`${api}/tweets`, data => console.log(data))
+
+    var newRamp = d3.scaleLinear().domain([500000, 13000000]).range(["blue", "red"]);
+
+    d3.json(`${api}/cities`, data => {
+      const min = d3.extent(data, (el) => (+el.population))
+      console.log(min);
+    });
+
+    d3.json(`${api}/cities`, (error, data) => {
+      if (error) {
+        console.log(error);
+      } else {
+        dataViz(data)
+      }
+    });
+
+    // function dataViz(incomingData) {
+    //   d3.select('body')
+    //     .selectAll('div.cities')
+    //     .data(incomingData)
+    //     .enter()
+    //     .append('div')
+    //     .attr('class', 'cities')
+    //     .html(d => d.city)
+    // }
+
+    // var data = [15, 50, 22, 8, 100, 1000, 66000, 500, 900, 20000];
+    // var ramp = d3.scaleLinear().domain(d3.extent(data)).range([0, 50, 75, 100]);
+
+    // var yScale = d3.scaleLinear().domain(data).range([0, 100]).clamp(true);
+
+
+
+
+
+    // d3.select('svg')
+    //   .selectAll('rect')
+    //   .data(data)
+    //   .enter()
+    //   .append('rect')
+    //   .attr('width', 10)
+    //   .attr('height', d => d)
+    //   .style('fill', '#FE9922')
+    //   .style('stroke', '#9A9B7A')
+    //   .style('stroke-width', '1px')
+    //   .attr('x', (d, i) => i * 10)
+    //   .attr('y', d => 100 - d);
+
+
+    // d3.json(`${api}/tweets`, (error, data) => {
+    //   dataViz(data);
+    // });
+
+    function dataViz(incomingData) {
+      var maxPopulation = d3.max(incomingData, d => parseInt(d.population));
+      var yScale = d3.scaleLinear().domain([0, maxPopulation])
+        .range([0, 460]);
+
+      d3.select('svg').attr('style', 'height: 480px; width: 600px;');
+      d3.select('svg')
+        .selectAll('rect')
+        .data(incomingData)
+        .enter()
+        .append('rect')
+        .attr('width', 50)
+        .attr('height', d => yScale(parseInt(d.population)))
+        .attr('x', (d, i) => i * 60)
+        .attr('y', d => 480 - yScale(parseInt(d.population)))
+        .style('fill', '#FE9922')
+        .style('stroke', '#9A8B7A')
+        .style('stroke-width', '1px')
+    }
+
+  </script>
+</body>
+
+</html>
